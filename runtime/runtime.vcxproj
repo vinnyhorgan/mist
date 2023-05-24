@@ -63,7 +63,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)deps\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>raylib.lib;opengl32.lib;gdi32.lib;winmm.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua54.lib;enet64.lib;ws2_32.lib;raylib.lib;opengl32.lib;gdi32.lib;winmm.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -82,7 +82,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)deps\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>raylib.lib;opengl32.lib;gdi32.lib;winmm.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua54.lib;enet64.lib;ws2_32.lib;raylib.lib;opengl32.lib;gdi32.lib;winmm.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
