@@ -10,6 +10,7 @@ int main()
     std::ifstream f("test.json");
     if (!f.is_open())
     {
+        std::cout << "Could not open file" << std::endl;
         return 1;
     }
 
@@ -26,6 +27,7 @@ int main()
     }
     else
     {
+        std::cout << "Could not find entities array" << std::endl;
         return 1;
     }
 
