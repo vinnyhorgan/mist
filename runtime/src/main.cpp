@@ -1,3 +1,5 @@
+#include "Logger.h"
+
 #include <raylib.h>
 #include <fstream>
 #include <json.hpp>
@@ -31,9 +33,12 @@ int main()
         return 1;
     }
 
+    SetTraceLogCallback(Logger::rayLog);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 600, "Mist Runtime");
     SetTargetFPS(60);
+
+    Logger::setDebug(true);
 
     while (!WindowShouldClose())
     {
