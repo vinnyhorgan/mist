@@ -5,6 +5,7 @@
 
 # Mist
 .vscode/
+scene.json
 
 # User-specific files
 *.rsuser
