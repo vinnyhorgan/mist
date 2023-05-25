@@ -59,7 +59,7 @@ int main()
         Vector2 virtualMouse = { 0 };
         virtualMouse.x = (mouse.x - (GetScreenWidth() - (windowWidth * scale)) * 0.5f) / scale;
         virtualMouse.y = (mouse.y - (GetScreenHeight() - (windowHeight * scale)) * 0.5f) / scale;
-        virtualMouse = Vector2Clamp(virtualMouse, (Vector2){ 0, 0 }, (Vector2){ (float)windowWidth, (float)windowHeight });
+        virtualMouse = Vector2Clamp(virtualMouse, Vector2{ 0, 0 }, Vector2{ (float)windowWidth, (float)windowHeight });
 
         BeginTextureMode(target);
 
@@ -78,9 +78,9 @@ int main()
 
             ClearBackground(BLACK);
 
-            DrawTexturePro(target.texture, (Rectangle){ 0.0f, 0.0f, (float)target.texture.width, (float)-target.texture.height },
-                           (Rectangle){ (GetScreenWidth() - ((float)windowWidth * scale)) * 0.5f, (GetScreenHeight() - ((float)windowHeight * scale)) * 0.5f,
-                           (float)windowWidth * scale, (float)windowHeight * scale }, (Vector2){ 0, 0 }, 0.0f, WHITE);
+            DrawTexturePro(target.texture, Rectangle{ 0.0f, 0.0f, (float)target.texture.width, (float)-target.texture.height },
+                           Rectangle{ (GetScreenWidth() - ((float)windowWidth * scale)) * 0.5f, (GetScreenHeight() - ((float)windowHeight * scale)) * 0.5f,
+                           (float)windowWidth * scale, (float)windowHeight * scale }, Vector2{ 0, 0 }, 0.0f, WHITE);
 
         EndDrawing();
     }

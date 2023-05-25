@@ -1,3 +1,8 @@
+#pragma warning(disable : 4018)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4065)
+
 #include "Logger.h"
 
 #include <raylib.h>
@@ -45,10 +50,10 @@ int main()
 
             if (sceneWindowActive)
             {
-                sceneWindowActive = !GuiWindowBox((Rectangle){ 0, 0, 192, GetScreenHeight() }, "SCENE");
-                newEntityButtonPressed = GuiButton((Rectangle){ 24, 48, 144, 24 }, "NEW ENTITY");
-                GuiLine((Rectangle){ 24, 88, 144, 16 }, NULL);
-                GuiLabel((Rectangle){ 24, 120, 144, 24 }, "ENTITIES");
+                sceneWindowActive = !GuiWindowBox(Rectangle{ 0, 0, 192, (float)GetScreenHeight() }, "SCENE");
+                newEntityButtonPressed = GuiButton(Rectangle{ 24, 48, 144, 24 }, "NEW ENTITY");
+                GuiLine(Rectangle{ 24, 88, 144, 16 }, NULL);
+                GuiLabel(Rectangle{ 24, 120, 144, 24 }, "ENTITIES");
             }
 
             DrawTexture(viewport.texture, 200, 200, WHITE);
