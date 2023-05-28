@@ -21,9 +21,14 @@ Entity* selectedEntity = nullptr;
 
 std::vector<std::string> consoleOutput;
 
+Rectangle panelContentRec;
+Vector2 panelScroll;
+
 void log(std::string message)
 {
     consoleOutput.push_back(message);
+    panelContentRec.height += 30;
+    panelScroll.y -= 30;
 }
 
 void createViewport()
@@ -54,8 +59,14 @@ int main()
     bool windowProjectActive = true;
     bool windowConsoleActive = true;
 
+    Rectangle panelRec = { 240, (float)GetScreenHeight() - 272 - 24 + 24, (float)GetScreenWidth() - 240 - 240, 272 };
+    panelContentRec = { 0, 0, (float)GetScreenWidth() - 240 - 240, 0 };
+    panelScroll = { 0, 0 };
+
     while (!WindowShouldClose())
     {
+        panelRec = { 240, (float)GetScreenHeight() - 272 - 24 + 24, (float)GetScreenWidth() - 240 - 240, 272 };
+
         if (IsWindowResized())
         {
             createViewport();
@@ -63,7 +74,7 @@ int main()
 
         if (IsMouseButtonPressed(0))
         {
-            log("Hello world!");
+            log(std::to_string(GetRandomValue(0, 100)));
         }
 
         BeginTextureMode(viewport);
@@ -183,14 +194,19 @@ int main()
 
             if (windowConsoleActive)
             {
-                windowConsoleActive = !GuiWindowBox(Rectangle{ 240, (float)GetScreenHeight() - 272 - 24, (float)GetScreenWidth() - 240 - 240, 272}, "CONSOLE");
+                windowConsoleActive = !GuiWindowBox(Rectangle{ 240, (float)GetScreenHeight() - 272 - 24, (float)GetScreenWidth() - 240 - 240, 272 }, "CONSOLE");
+
+                Rectangle panelView = GuiScrollPanel(panelRec, NULL, panelContentRec, &panelScroll);
+                panelContentRec = { 0, 0, panelView.width, panelContentRec.height };
+
+                BeginScissorMode(panelView.x, panelView.y, panelView.width, panelView.height);
 
                 for (int i = 0; i < consoleOutput.size(); i++)
                 {
-                    GuiLabel(Rectangle{ 240 + 5, (float)(GetScreenHeight() - 272 - 24 + 30 + 30 * i), (float)GetScreenWidth() - 240 - 240 - 10, 30 }, consoleOutput[i].c_str());
-
-                    GuiLine(Rectangle{ 250, (float)(GetScreenHeight() - 272 - 24 + 30 + 30 * i + 30), (float)GetScreenWidth() - 240 - 260, 1 }, "");
+                    GuiLabel(Rectangle{ panelRec.x + panelScroll.x, panelRec.y + panelScroll.y + 30 * i, panelView.width - 10, 30 }, consoleOutput[i].c_str());
                 }
+
+                EndScissorMode();
             }
 
             DrawTexture(viewport.texture, 240, 48, WHITE);
