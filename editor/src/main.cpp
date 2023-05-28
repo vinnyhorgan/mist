@@ -21,14 +21,14 @@ Entity* selectedEntity = nullptr;
 
 std::vector<std::string> consoleOutput;
 
-Rectangle panelContentRec;
-Vector2 panelScroll;
+Rectangle consolePanelContentRec;
+Vector2 consolePanelScroll;
 
 void log(std::string message)
 {
     consoleOutput.push_back(message);
-    panelContentRec.height += 30;
-    panelScroll.y -= 30;
+    consolePanelContentRec.height += 30;
+    consolePanelScroll.y -= 30;
 }
 
 void createViewport()
@@ -59,13 +59,20 @@ int main()
     bool windowProjectActive = true;
     bool windowConsoleActive = true;
 
-    Rectangle panelRec = { 240, (float)GetScreenHeight() - 272 - 24 + 24, (float)GetScreenWidth() - 240 - 240, 272 };
-    panelContentRec = { 0, 0, (float)GetScreenWidth() - 240 - 240, 0 };
-    panelScroll = { 0, 0 };
+    Rectangle consolePanelRec = { 240, (float)GetScreenHeight() - 272 - 24 + 24, ((float)GetScreenWidth() - 240 - 240) / 2, 272 - 24 };
+    consolePanelContentRec = { 0, 0, ((float)GetScreenWidth() - 240 - 240) / 2, 0 };
+    consolePanelScroll = { 0, 0 };
+
+    Rectangle projectPanelRec = { 240 + ((float)GetScreenWidth() - 240 - 240) / 2, (float)GetScreenHeight() - 272 - 24 + 24, ((float)GetScreenWidth() - 240 - 240) / 2, 272 - 24 };
+    Rectangle projectPanelContentRec = { 0, 0, ((float)GetScreenWidth() - 240 - 240) / 2, 0 };
+    Vector2 projectPanelScroll = { 0, 0 };
 
     while (!WindowShouldClose())
     {
-        panelRec = { 240, (float)GetScreenHeight() - 272 - 24 + 24, (float)GetScreenWidth() - 240 - 240, 272 };
+        consolePanelRec = { 240, (float)GetScreenHeight() - 272 - 24 + 24, ((float)GetScreenWidth() - 240 - 240) / 2, 272 - 24 };
+        consolePanelContentRec = { 0, 0, consolePanelRec.width - 14, consolePanelContentRec.height };
+        projectPanelRec = { 240 + ((float)GetScreenWidth() - 240 - 240) / 2, (float)GetScreenHeight() - 272 - 24 + 24, ((float)GetScreenWidth() - 240 - 240) / 2, 272 - 24 };
+        projectPanelContentRec = { 0, 0, projectPanelRec.width - 14, projectPanelContentRec.height };
 
         if (IsWindowResized())
         {
@@ -116,7 +123,7 @@ int main()
 
             if (windowSceneActive)
             {
-                windowSceneActive = !GuiWindowBox(Rectangle{ 0, 48, 240, ((float)GetScreenHeight() - 48 - 24) / 2 }, "SCENE");
+                windowSceneActive = !GuiWindowBox(Rectangle{ 0, 48, 240, (float)GetScreenHeight() - 48 - 24 }, "SCENE");
 
                 if (GuiButton(Rectangle{ 5, 48 + 30, 230, 30 }, GuiIconText(ICON_FILE_SAVE, "Create new entity")))
                 {
@@ -158,52 +165,74 @@ int main()
 
             if (windowProjectActive)
             {
-                windowProjectActive = !GuiWindowBox(Rectangle{ 0, 48 + ((float)GetScreenHeight() - 48 - 24) / 2, 240, ((float)GetScreenHeight() - 48 - 24) / 2 }, "PROJECT");
+                windowProjectActive = !GuiWindowBox(Rectangle{ 240 + ((float)GetScreenWidth() - 240 - 240) / 2, (float)GetScreenHeight() - 272 - 24, ((float)GetScreenWidth() - 240 - 240) / 2, 272 }, "PROJECT");
 
-                static std::string currentPath = ".";
+                Rectangle projectPanelView = GuiScrollPanel(projectPanelRec, NULL, projectPanelContentRec, &projectPanelScroll);
+
+                static std::string currentPath = "../../../..";
 
                 FilePathList files = LoadDirectoryFiles(currentPath.c_str());
 
-                if (GuiButton(Rectangle{ 5, 48 + 30 + ((float)GetScreenHeight() - 48 - 24) / 2, 230, 30 }, GuiIconText(ICON_ARROW_LEFT, "Back")))
+                int columns = 2;
+
+                if (IsWindowMaximized())
                 {
-                    currentPath = ".";
+                    columns = 4;
                 }
+
+                BeginScissorMode(projectPanelView.x, projectPanelView.y, projectPanelView.width, projectPanelView.height);
 
                 for (int i = 0; i < files.count; i++)
                 {
+                    projectPanelContentRec.height = 35 * (i / columns) + 35;
+
+                    std::string displayName = files.paths[i];
+
+                    if (displayName.substr(0, 2) == "./")
+                    {
+                        displayName = displayName.substr(2, displayName.size() - 2);
+                    }
+
+                    if (displayName.size() > 16)
+                    {
+                        displayName = displayName.substr(0, 16) + "...";
+                    }
+
                     if (IsFileExtension(files.paths[i], ".json"))
                     {
-                        if (GuiButton(Rectangle{ 5, (float)(48 + 60 + ((float)GetScreenHeight() - 48 - 24) / 2 + 30 * i), 230, 30 }, files.paths[i]))
+                        if (GuiButton(Rectangle{ projectPanelRec.x + 5 + (((float)GetScreenWidth() - 240 - 240) / 2) / columns * (i % columns), projectPanelScroll.y + (float)(projectPanelRec.y + 5 + 35 * (i / columns)), (((float)GetScreenWidth() - 240 - 240) / 2) / columns - 24, 30 }, GuiIconText(ICON_FILE_SAVE, displayName.c_str())))
                         {
-
                         }
                     }
                     else if (IsPathFile(files.paths[i]))
                     {
-                        GuiLabel(Rectangle{ 5, (float)(48 + 60 + ((float)GetScreenHeight() - 48 - 24) / 2 + 30 * i), 230, 30 }, files.paths[i]);
+                        if (GuiButton(Rectangle{ projectPanelRec.x + 5 + (((float)GetScreenWidth() - 240 - 240) / 2) / columns * (i % columns), projectPanelScroll.y + (float)(projectPanelRec.y + 5 + 35 * (i / columns)), (((float)GetScreenWidth() - 240 - 240) / 2) / columns - 24, 30 }, GuiIconText(ICON_FILE_SAVE, displayName.c_str())))
+                        {
+                        }
                     }
                     else
                     {
-                        if (GuiButton(Rectangle{ 5, (float)(48 + 60 + ((float)GetScreenHeight() - 48 - 24) / 2 + 30 * i), 230, 30 }, files.paths[i]))
+                        if (GuiButton(Rectangle{ projectPanelRec.x + 5 + (((float)GetScreenWidth() - 240 - 240) / 2) / columns * (i % columns), projectPanelScroll.y + (float)(projectPanelRec.y + 5 + 35 * (i / columns)), (((float)GetScreenWidth() - 240 - 240) / 2) / columns - 24, 30 }, GuiIconText(ICON_FOLDER, displayName.c_str())))
                         {
                             currentPath = files.paths[i];
                         }
                     }
                 }
+
+                EndScissorMode();
             }
 
             if (windowConsoleActive)
             {
-                windowConsoleActive = !GuiWindowBox(Rectangle{ 240, (float)GetScreenHeight() - 272 - 24, (float)GetScreenWidth() - 240 - 240, 272 }, "CONSOLE");
+                windowConsoleActive = !GuiWindowBox(Rectangle{ 240, (float)GetScreenHeight() - 272 - 24, ((float)GetScreenWidth() - 240 - 240) / 2, 272 }, "CONSOLE");
 
-                Rectangle panelView = GuiScrollPanel(panelRec, NULL, panelContentRec, &panelScroll);
-                panelContentRec = { 0, 0, panelView.width, panelContentRec.height };
+                Rectangle consolePanelView = GuiScrollPanel(consolePanelRec, NULL, consolePanelContentRec, &consolePanelScroll);
 
-                BeginScissorMode(panelView.x, panelView.y, panelView.width, panelView.height);
+                BeginScissorMode(consolePanelView.x, consolePanelView.y, consolePanelView.width, consolePanelView.height);
 
                 for (int i = 0; i < consoleOutput.size(); i++)
                 {
-                    GuiLabel(Rectangle{ panelRec.x + panelScroll.x, panelRec.y + panelScroll.y + 30 * i, panelView.width - 10, 30 }, consoleOutput[i].c_str());
+                    GuiLabel(Rectangle{ consolePanelRec.x + consolePanelScroll.x, consolePanelRec.y + consolePanelScroll.y + 30 * i, consolePanelView.width - 10, 30 }, consoleOutput[i].c_str());
                 }
 
                 EndScissorMode();
